@@ -1,0 +1,445 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NexTrip API",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://svc.metrotransit.org/NexTrip/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "NexTripDeparture": {
+        "type": "object",
+        "description": "An array of NexTripDeparture elements is returned by the GetDepartures and GetTimepointDepartures operations.",
+        "properties": {
+          "Actual": {
+            "type": "boolean",
+            "description": "bool indicates the departure time is based on current information from the vehicle"
+          },
+          "BlockNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "indicates the work for a vehicle"
+          },
+          "DepartureText": {
+            "type": "string",
+            "description": "displays time format for scheduled time and countdown format for real-time departures. (Actual=true)"
+          },
+          "DepartureTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "datetime value of the departure time"
+          },
+          "Description": {
+            "type": "string",
+            "description": "describes the trip destination"
+          },
+          "Gate": {
+            "type": "string",
+            "description": "indicates the stop or gate identifier where applicable"
+          },
+          "Route": {
+            "type": "string",
+            "description": "the current route for this departure"
+          },
+          "RouteDirection": {
+            "type": "string",
+            "description": "the current trip direction"
+          },
+          "Terminal": {
+            "type": "string",
+            "description": "the route branch letter where applicable"
+          },
+          "VehicleHeading": {
+            "type": "integer",
+            "format": "int64",
+            "description": "this value is currently not available and always returns 0. (maybe someday)"
+          },
+          "VehicleLatitude": {
+            "type": "number",
+            "format": "float",
+            "description": "last reported latitude. only included with real-time departures. (Actual=true)"
+          },
+          "VehicleLongitude": {
+            "type": "number",
+            "format": "float",
+            "description": "last reported longitude. only included with real-time departures. (Actual=true)"
+          }
+        }
+      },
+      "NexTripRoute": {
+        "type": "object",
+        "description": "An array of NexTripRoute elements is returned by the GetRoutes operation.",
+        "properties": {
+          "Description": {
+            "type": "string",
+            "description": "description of the route"
+          },
+          "ProviderID": {
+            "type": "string",
+            "description": "identifier that corresponds to elements returned by the GetProviders operation"
+          },
+          "Route": {
+            "type": "string",
+            "description": "route number or label"
+          }
+        }
+      },
+      "TextValuePair": {
+        "type": "object",
+        "description": "The GetProviders, GetDirections and GetStops operations return arrays of TextValuePair. These simply consist of a Text and Value element. The text elements are labels and value elements contain identifiers. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation.",
+        "properties": {
+          "Text": {
+            "type": "string",
+            "description": "Label"
+          },
+          "Value": {
+            "type": "string",
+            "description": "Identifier. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation."
+          }
+        }
+      },
+      "VehicleLocation": {
+        "type": "object",
+        "properties": {
+          "BlockNumber": {
+            "type": "integer",
+            "format": "int64",
+            "description": "indicates the work for a vehicle"
+          },
+          "Direction": {
+            "type": "integer",
+            "format": "int64",
+            "description": "the direction ID of the current trip direction"
+          },
+          "LocationTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "the time the location was last reported by the vehicle"
+          },
+          "Route": {
+            "type": "string",
+            "description": "the current route for the vehicle"
+          },
+          "Terminal": {
+            "type": "string",
+            "description": "the route branch letter where applicable"
+          },
+          "VehicleLatitude": {
+            "type": "number",
+            "format": "float",
+            "description": "last reported latitude"
+          },
+          "VehicleLongitude": {
+            "type": "number",
+            "format": "float",
+            "description": "last reported longitude"
+          },
+          "Bearing": {
+            "type": "integer",
+            "format": "int64",
+            "description": "this value is currently not available and always returns 0. (for future use)"
+          },
+          "Odometer": {
+            "type": "integer",
+            "format": "int64",
+            "description": "this value is currently not available and always returns 0. (for future use)"
+          },
+          "Speed": {
+            "type": "integer",
+            "format": "int64",
+            "description": "this value is currently not available and always returns 0. (for future use)"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/Providers": {
+      "get": {
+        "tags": [],
+        "summary": "GetProviders",
+        "description": "Returns a list of area Transit providers. Providers are identified in the list of Routes allowing routes to be selected for a single provider.",
+        "operationId": "getproviders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextValuePair"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/Routes": {
+      "get": {
+        "tags": [],
+        "summary": "GetRoutes",
+        "description": "Returns a list of Transit routes that are in service on the current day.",
+        "operationId": "getroutes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NexTripRoute"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/Directions/{route}": {
+      "get": {
+        "tags": [],
+        "summary": "GetDirections",
+        "description": "Returns the two directions that are valid for a given route. Either North/South or East/West. The result includes text/value pair with the direction name and an ID. Directions are identified with an ID value. 1 = South, 2 = East, 3 = West, 4 = North.",
+        "operationId": "getdirections",
+        "parameters": [
+          {
+            "name": "route",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextValuePair"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/Stops/{route}/{direction}": {
+      "get": {
+        "tags": [],
+        "summary": "GetStops",
+        "description": "Returns a list of Timepoint stops for the given Route/Direction. The result includes text/value pairs with the stop description and a 4 character stop (or node) identifier.",
+        "operationId": "getstops",
+        "parameters": [
+          {
+            "name": "route",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TextValuePair"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/{stopid}": {
+      "get": {
+        "tags": [],
+        "summary": "GetDepartures",
+        "description": "This operation is used to return a list of departures scheduled for any given bus stop. A StopID is an integer value identifying any one of the many thousands of bus stops in the metro. Stop information can be derived from the GTFS schedule data updated weekly for public use. https://gisdata.mn.gov/dataset/us-mn-state-metc-trans-transit-schedule-google-fd",
+        "operationId": "getdepartures",
+        "parameters": [
+          {
+            "name": "stopid",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "11167"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NexTripDeparture"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/{route}/{direction}/{stop}": {
+      "get": {
+        "tags": [],
+        "summary": "GetTimePointDepartures",
+        "description": "Returns the scheduled departures for a selected route, direction and timepoint stop.",
+        "operationId": "gettimepointdepartures",
+        "parameters": [
+          {
+            "name": "route",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "4"
+            }
+          },
+          {
+            "name": "stop",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "7SOL"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NexTripDeparture"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/VehicleLocations/{route}": {
+      "get": {
+        "tags": [],
+        "summary": "GetVehicleLocations",
+        "description": "This operation returns a list of vehicles currently in service that have recently (within 5 minutes) reported their locations. A route paramter is used to return results for the given route. Use \"0\" for the route parameter to return a list of all vehicles in service.",
+        "operationId": "getvehiclelocations",
+        "parameters": [
+          {
+            "name": "route",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleLocation"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "deprecated": false,
+        "security": []
+      }
+    }
+  },
+  "x-headers": [
+    {
+      "value": "application/json",
+      "key": "Accept"
+    }
+  ],
+  "x-explorer-enabled": true,
+  "x-samples-enabled": true,
+  "x-samples-languages": [
+    "curl",
+    "node",
+    "ruby",
+    "javascript",
+    "python"
+  ]
+}
