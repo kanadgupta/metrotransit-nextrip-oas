@@ -1,6 +1,6 @@
 # Metro Transit NexTrip API Spec
 
-This provides an [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification) specification file for the [Metro Transit NexTrip API](http://svc.metrotransit.org/). This spec only includes JSON responses (with XML response information coming at a later date).
+This provides an [OpenAPI 3.0](https://github.com/OAI/OpenAPI-Specification) specification file for the [Metro Transit NexTrip API](https://svc.metrotransit.org/NexTrip). This spec only includes JSON responses (with XML response information coming at a later date).
 
 ## ReadMe Documentation
 
