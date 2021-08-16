@@ -90,7 +90,7 @@
       },
       "TextValuePair": {
         "type": "object",
-        "description": "The GetProviders, GetDirections and GetStops operations return arrays of TextValuePair. These simply consist of a Text and Value element. The text elements are labels and value elements contain identifiers. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation.",
+        "description": "The GetProviders, GetDirections and GetStops operations return arrays of TextValuePair. These simply consist of a **Text** and **Value** element. The text elements are labels and value elements contain identifiers. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation.",
         "properties": {
           "Text": {
             "type": "string",
@@ -224,7 +224,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "5"
+              "example": "5"
             }
           }
         ],
@@ -261,7 +261,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "5"
+              "example": "5"
             }
           },
           {
@@ -271,7 +271,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "4"
+              "example": "4"
             }
           }
         ],
@@ -308,7 +308,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "11167"
+              "example": "11167"
             }
           }
         ],
@@ -345,7 +345,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "5"
+              "example": "5"
             }
           },
           {
@@ -355,7 +355,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "4"
+              "example": "4"
             }
           },
           {
@@ -365,7 +365,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "7SOL"
+              "example": "7SOL"
             }
           }
         ],
@@ -402,7 +402,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "5"
+              "example": "5"
             }
           }
         ],
@@ -421,26 +421,9 @@
             }
           }
         },
-
         "deprecated": false,
         "security": []
       }
     }
-  },
-  "x-headers": [
-    {
-      "value": "application/json",
-      "key": "Accept"
-    }
-  ],
-  "x-explorer-enabled": true,
-  "x-samples-enabled": true,
-  "x-samples-languages": [
-    "curl",
-    "node",
-    "node-simple",
-    "ruby",
-    "javascript",
-    "python"
-  ]
+  }
 }
