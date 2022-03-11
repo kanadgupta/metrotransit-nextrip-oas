@@ -1,0 +1,14 @@
+name: Validate OpenAPI file
+
+# validate OpenAPI file on every push to repo
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: readmeio/rdme@7.0.0
+        with:
+          # `rdme` will automatically find `openapi.json`, so no need to specify file
+          rdme: validate

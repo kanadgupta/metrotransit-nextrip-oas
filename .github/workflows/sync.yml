@@ -1,0 +1,16 @@
+name: Sync to ReadMe
+
+# only sync to ReadMe on push to `main` branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: readmeio/rdme@7.0.0
+        with:
+          rdme: openapi openapi.json --key=${{ secrets.README_API_KEY }} --id=${{ secrets.README_API_DEFINITION_ID }}
