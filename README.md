@@ -4,7 +4,7 @@ This provides an [OpenAPI 3.1](https://github.com/OAI/OpenAPI-Specification) spe
 
 ## ReadMe Documentation
 
-The OAS file in this repository is syncing to [ReadMe](https://readme.com/) via a [GitHub Action](https://github.com/marketplace/actions/readme-api-github-sync). You can view the latest ReadMe documentation [here](https://metrotransit.readme.io/reference).
+The OAS file in this repository is syncing to [ReadMe](https://readme.com/) via a [GitHub Action](https://github.com/marketplace/actions/rdme-sync-to-readme). You can view the latest ReadMe documentation [here](https://metrotransit.readme.io/reference).
 
 ## Available endpoints
 
