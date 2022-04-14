@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: readmeio/rdme@7.0.1
+      - uses: readmeio/rdme@7.1.1
         with:
           # `rdme` will automatically find `openapi.json`, so no need to specify file
           rdme: validate
