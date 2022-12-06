@@ -1,428 +1,576 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.1",
   "info": {
     "title": "NexTrip API",
-    "version": "1.0.0"
+    "description": "API for creating Metro Transit real-time departure information display (beta, subject to change)",
+    "version": "2"
   },
   "servers": [
     {
-      "url": "http://svc.metrotransit.org/NexTrip/"
+      "url": "https://svc.metrotransit.org"
     }
   ],
-  "components": {
-    "schemas": {
-      "NexTripDeparture": {
-        "type": "object",
-        "description": "An array of NexTripDeparture elements is returned by the GetDepartures and GetTimepointDepartures operations.",
-        "properties": {
-          "Actual": {
-            "type": "boolean",
-            "description": "bool indicates the departure time is based on current information from the vehicle"
+  "paths": {
+    "/nextrip/agencies": {
+      "get": {
+        "tags": ["NexTrip"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agency"
+                  }
+                }
+              }
+            }
           },
-          "BlockNumber": {
-            "type": "integer",
-            "format": "int64",
-            "description": "indicates the work for a vehicle"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
-          "DepartureText": {
-            "type": "string",
-            "description": "displays time format for scheduled time and countdown format for real-time departures. (Actual=true)"
-          },
-          "DepartureTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "datetime value of the departure time"
-          },
-          "Description": {
-            "type": "string",
-            "description": "describes the trip destination"
-          },
-          "Gate": {
-            "type": "string",
-            "description": "indicates the stop or gate identifier where applicable"
-          },
-          "Route": {
-            "type": "string",
-            "description": "the current route for this departure"
-          },
-          "RouteDirection": {
-            "type": "string",
-            "description": "the current trip direction"
-          },
-          "Terminal": {
-            "type": "string",
-            "description": "the route branch letter where applicable"
-          },
-          "VehicleHeading": {
-            "type": "integer",
-            "format": "int64",
-            "description": "this value is currently not available and always returns 0. (maybe someday)"
-          },
-          "VehicleLatitude": {
-            "type": "number",
-            "format": "float",
-            "description": "last reported latitude. only included with real-time departures. (Actual=true)"
-          },
-          "VehicleLongitude": {
-            "type": "number",
-            "format": "float",
-            "description": "last reported longitude. only included with real-time departures. (Actual=true)"
+          "500": {
+            "description": "Server Error"
           }
         }
-      },
-      "NexTripRoute": {
-        "type": "object",
-        "description": "An array of NexTripRoute elements is returned by the GetRoutes operation.",
-        "properties": {
-          "Description": {
-            "type": "string",
-            "description": "description of the route"
+      }
+    },
+    "/nextrip/routes": {
+      "get": {
+        "tags": ["NexTrip"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Route"
+                  }
+                }
+              }
+            }
           },
-          "ProviderID": {
-            "type": "string",
-            "description": "identifier that corresponds to elements returned by the GetProviders operation"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
-          "Route": {
-            "type": "string",
-            "description": "route number or label"
+          "500": {
+            "description": "Server Error"
           }
         }
-      },
-      "TextValuePair": {
-        "type": "object",
-        "description": "The GetProviders, GetDirections and GetStops operations return arrays of TextValuePair. These simply consist of a **Text** and **Value** element. The text elements are labels and value elements contain identifiers. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation.",
-        "properties": {
-          "Text": {
-            "type": "string",
-            "description": "Label"
+      }
+    },
+    "/nextrip/directions/{route_id}": {
+      "get": {
+        "tags": ["NexTrip"],
+        "parameters": [
+          {
+            "name": "route_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Direction"
+                  }
+                }
+              }
+            }
           },
-          "Value": {
-            "type": "string",
-            "description": "Identifier. The direction and stop values, for example, along with the route number are required for the GetTimepointDepartures operation."
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
           }
         }
-      },
-      "VehicleLocation": {
-        "type": "object",
-        "properties": {
-          "BlockNumber": {
-            "type": "integer",
-            "format": "int64",
-            "description": "indicates the work for a vehicle"
+      }
+    },
+    "/nextrip/stops/{route_id}/{direction_id}": {
+      "get": {
+        "tags": ["NexTrip"],
+        "parameters": [
+          {
+            "name": "route_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
-          "Direction": {
-            "type": "integer",
-            "format": "int64",
-            "description": "the direction ID of the current trip direction"
+          {
+            "name": "direction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Place"
+                  }
+                }
+              }
+            }
           },
-          "LocationTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "the time the location was last reported by the vehicle"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
-          "Route": {
-            "type": "string",
-            "description": "the current route for the vehicle"
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/nextrip/{stop_id}": {
+      "get": {
+        "tags": ["NexTrip"],
+        "parameters": [
+          {
+            "name": "stop_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NexTripResult"
+                }
+              }
+            }
           },
-          "Terminal": {
-            "type": "string",
-            "description": "the route branch letter where applicable"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
-          "VehicleLatitude": {
-            "type": "number",
-            "format": "float",
-            "description": "last reported latitude"
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/nextrip/{route_id}/{direction_id}/{place_code}": {
+      "get": {
+        "tags": ["NexTrip"],
+        "parameters": [
+          {
+            "name": "route_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
-          "VehicleLongitude": {
-            "type": "number",
-            "format": "float",
-            "description": "last reported longitude"
+          {
+            "name": "direction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           },
-          "Bearing": {
-            "type": "integer",
-            "format": "int64",
-            "description": "this value is currently not available and always returns 0. (for future use)"
+          {
+            "name": "place_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NexTripResult"
+                }
+              }
+            }
           },
-          "Odometer": {
-            "type": "integer",
-            "format": "int64",
-            "description": "this value is currently not available and always returns 0. (for future use)"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
-          "Speed": {
-            "type": "integer",
-            "format": "int64",
-            "description": "this value is currently not available and always returns 0. (for future use)"
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/nextrip/vehicles/{route_id}": {
+      "get": {
+        "tags": ["NexTrip"],
+        "parameters": [
+          {
+            "name": "route_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vehicle"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
           }
         }
       }
     }
   },
-  "paths": {
-    "/Providers": {
-      "get": {
-        "tags": [],
-        "summary": "GetProviders",
-        "description": "Returns a list of area Transit providers. Providers are identified in the list of Routes allowing routes to be selected for a single provider.",
-        "operationId": "getProviders",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TextValuePair"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/Routes": {
-      "get": {
-        "tags": [],
-        "summary": "GetRoutes",
-        "description": "Returns a list of Transit routes that are in service on the current day.",
-        "operationId": "getRoutes",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/NexTripRoute"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/Directions/{route}": {
-      "get": {
-        "tags": [],
-        "summary": "GetDirections",
-        "description": "Returns the two directions that are valid for a given route. Either North/South or East/West. The result includes text/value pair with the direction name and an ID. Directions are identified with an ID value. 1 = South, 2 = East, 3 = West, 4 = North.",
-        "operationId": "getDirections",
-        "parameters": [
-          {
-            "name": "route",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "5"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TextValuePair"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/Stops/{route}/{direction}": {
-      "get": {
-        "tags": [],
-        "summary": "GetStops",
-        "description": "Returns a list of Timepoint stops for the given Route/Direction. The result includes text/value pairs with the stop description and a 4 character stop (or node) identifier.",
-        "operationId": "getStops",
-        "parameters": [
-          {
-            "name": "route",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "5"
-            }
+  "components": {
+    "schemas": {
+      "Agency": {
+        "type": "object",
+        "properties": {
+          "agency_id": {
+            "type": "integer",
+            "format": "int32"
           },
-          {
-            "name": "direction",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "4"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TextValuePair"
-                  }
-                }
-              }
-            }
+          "agency_name": {
+            "type": "string",
+            "nullable": true
           }
         },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/{stopid}": {
-      "get": {
-        "tags": [],
-        "summary": "GetDepartures",
-        "description": "This operation is used to return a list of departures scheduled for any given bus stop. A StopID is an integer value identifying any one of the many thousands of bus stops in the metro. Stop information can be derived from the GTFS schedule data updated weekly for public use. https://gisdata.mn.gov/dataset/us-mn-state-metc-trans-transit-schedule-google-fd",
-        "operationId": "getDepartures",
-        "parameters": [
-          {
-            "name": "stopid",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "11167"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/NexTripDeparture"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/{route}/{direction}/{stop}": {
-      "get": {
-        "tags": [],
-        "summary": "GetTimePointDepartures",
-        "description": "Returns the scheduled departures for a selected route, direction and timepoint stop.",
-        "operationId": "getTimePointDepartures",
-        "parameters": [
-          {
-            "name": "route",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "5"
-            }
+        "additionalProperties": false
+      },
+      "AlertMessage": {
+        "type": "object",
+        "properties": {
+          "stop_closed": {
+            "type": "boolean"
           },
-          {
-            "name": "direction",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "4"
-            }
+          "alert_text": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Departure": {
+        "type": "object",
+        "properties": {
+          "actual": {
+            "type": "boolean"
           },
-          {
-            "name": "stop",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "7SOL"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/NexTripDeparture"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": false,
-        "security": []
-      }
-    },
-    "/VehicleLocations/{route}": {
-      "get": {
-        "tags": [],
-        "summary": "GetVehicleLocations",
-        "description": "This operation returns a list of vehicles currently in service that have recently (within 5 minutes) reported their locations. A route paramter is used to return results for the given route. Use \"0\" for the route parameter to return a list of all vehicles in service.",
-        "operationId": "getVehicleLocations",
-        "parameters": [
-          {
-            "name": "route",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "5"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VehicleLocation"
-                  }
-                }
-              }
-            }
+          "trip_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "departure_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "departure_time": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "gate": {
+            "type": "string",
+            "nullable": true
+          },
+          "route_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "route_short_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "direction_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "terminal": {
+            "type": "string",
+            "nullable": true
+          },
+          "schedule_relationship": {
+            "type": "string",
+            "nullable": true
           }
         },
-        "deprecated": false,
-        "security": []
+        "additionalProperties": false
+      },
+      "Direction": {
+        "type": "object",
+        "properties": {
+          "direction_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "direction_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NexTripResult": {
+        "type": "object",
+        "properties": {
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "nullable": true
+          },
+          "alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlertMessage"
+            },
+            "nullable": true
+          },
+          "departures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Departure"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Place": {
+        "type": "object",
+        "properties": {
+          "place_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Route": {
+        "type": "object",
+        "properties": {
+          "route_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "agency_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "route_label": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Stop": {
+        "type": "object",
+        "properties": {
+          "stop_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "trip_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "direction": {
+            "type": "string",
+            "nullable": true
+          },
+          "location_time": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "route_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "terminal": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "float"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "float"
+          },
+          "bearing": {
+            "type": "number",
+            "format": "float"
+          },
+          "odometer": {
+            "type": "number",
+            "format": "double"
+          },
+          "speed": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "additionalProperties": false
       }
     }
   }
